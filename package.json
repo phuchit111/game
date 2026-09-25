@@ -1,0 +1,14 @@
+{
+  "name": "gis-mission-platform",
+  "version": "1.0.0",
+  "private": true,
+  "description": "GIS Mission Platform - Comprehensive GIS & Remote Sensing Interactive Learning System",
+  "scripts": {
+    "dev": "npm --prefix client run dev",
+    "client": "npm --prefix client run dev",
+    "server": "npm --prefix server start",
+    "build": "npm --prefix client run build",
+    "db:up": "docker compose up -d",
+    "db:down": "docker compose down"
+  }
+}

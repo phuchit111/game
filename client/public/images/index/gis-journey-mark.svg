@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img" aria-labelledby="title">
+  <title id="title">GIS Journey</title>
+  <g fill="none" stroke="#1976b9" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M82 34A36 36 0 1 0 82 66H55" stroke-width="13"/>
+    <path d="M54 50H82" stroke-width="13"/>
+  </g>
+  <g fill="#1976b9">
+    <rect x="19" y="7" width="12" height="28" rx="2" transform="rotate(-29 25 21)"/>
+    <rect x="69" y="73" width="12" height="25" rx="2" transform="rotate(-29 75 85)"/>
+  </g>
+</svg>

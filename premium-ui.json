@@ -1,0 +1,10 @@
+{
+  "profile": "product",
+  "sourceRoots": ["client/src"],
+  "canonicalMap": "UX-CONTRACT.md",
+  "requiredCapabilities": ["Form", "Scrollbar"],
+  "ownership": {
+    "Select/Listbox": "native",
+    "Date": "typed"
+  }
+}
