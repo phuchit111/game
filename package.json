@@ -7,7 +7,7 @@
     "dev": "npm --prefix client run dev",
     "client": "npm --prefix client run dev",
     "server": "npm --prefix server start",
-    "build": "npm --prefix client run build",
+    "build": "npm ci --prefix client --ignore-scripts && npm --prefix client run build",
     "db:up": "docker compose up -d",
     "db:down": "docker compose down"
   }
