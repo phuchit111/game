@@ -1,5 +1,5 @@
 import type { LeaderboardEntry, OverallLeaderboardEntry } from '../types/mission';
-import { API_BASE } from './api';
+import { API_BASE, API_TIMEOUT_MS } from './api';
 const LOCAL_STORAGE_KEY = 'attribute_mission_leaderboard';
 const PROFILE_KEY = 'gis_mission_player_profile';
 const MISSION_IDS = ['attribute', 'vector', 'raster', 'rs', 'coordinate'] as const;
@@ -61,7 +61,7 @@ const mergeLocalProfile = (list: OverallLeaderboardEntry[]) => {
 
 export async function fetchOverallLeaderboard(): Promise<{ list: OverallLeaderboardEntry[]; isLocal: boolean }> {
   try {
-    const res = await fetch(`${API_BASE}/leaderboard/overall`, { signal: AbortSignal.timeout(3000) });
+    const res = await fetch(`${API_BASE}/leaderboard/overall`, { signal: AbortSignal.timeout(API_TIMEOUT_MS) });
     if (res.ok) {
       const data = await res.json();
       if (data.ok && Array.isArray(data.data)) {
@@ -77,7 +77,7 @@ export async function fetchOverallLeaderboard(): Promise<{ list: OverallLeaderbo
 
 export async function fetchLeaderboard(): Promise<{ list: LeaderboardEntry[]; isLocal: boolean }> {
   try {
-    const res = await fetch(`${API_BASE}/leaderboard`, { signal: AbortSignal.timeout(2500) });
+    const res = await fetch(`${API_BASE}/leaderboard`, { signal: AbortSignal.timeout(API_TIMEOUT_MS) });
     if (res.ok) {
       const data = await res.json();
       if (data.ok && Array.isArray(data.data)) {
@@ -115,7 +115,7 @@ export async function submitScoreToBackend(
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name: cleanName, score, mode }),
-      signal: AbortSignal.timeout(3000),
+      signal: AbortSignal.timeout(API_TIMEOUT_MS),
     });
 
     if (res.ok) {
