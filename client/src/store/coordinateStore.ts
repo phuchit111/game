@@ -4,6 +4,7 @@ import { gridToUTM, randInt, GRID_X_MIN, GRID_X_MAX, GRID_Y_MIN, GRID_Y_MAX, fmt
 import { REFERENCE_LAT, REFERENCE_LON } from '../constants/coordinateData';
 import { SoundFX } from '../utils/soundFX';
 import confetti from 'canvas-confetti';
+import { API_BASE } from '../services/api';
 
 const ROUNDS_PER_PHASE = 5;
 const POINTS_PER_ROUND = 2;
@@ -373,7 +374,7 @@ export const useCoordinateStore = create<CoordinateState>((set, get) => ({
   loadLeaderboard: async () => {
     set({ isLoadingLeaderboard: true });
     try {
-      const res = await fetch('/api/leaderboard?mission=coordinate');
+      const res = await fetch(`${API_BASE}/leaderboard?mission=coordinate`);
       const json = await res.json();
       if (json.ok && Array.isArray(json.data)) {
         set({
@@ -410,7 +411,7 @@ export const useCoordinateStore = create<CoordinateState>((set, get) => ({
     set({ saveStatus: 'saving' });
 
     try {
-      const res = await fetch('/api/leaderboard', {
+      const res = await fetch(`${API_BASE}/leaderboard`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

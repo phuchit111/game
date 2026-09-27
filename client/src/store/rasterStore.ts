@@ -21,6 +21,7 @@ import {
   QUESTIONS,
 } from '../constants/rasterData';
 import { fetchLeaderboard, submitScoreToBackend } from '../services/leaderboardService';
+import { API_BASE } from '../services/api';
 
 // Precompute explorer grid
 export const explorerElevGrid: number[][] = [];
@@ -446,7 +447,7 @@ export const useRasterStore = create<RasterState>((set, get) => ({
   loadLeaderboard: async () => {
     set({ isLoadingLeaderboard: true });
     try {
-      const res = await fetch('/api/leaderboard?mission=raster');
+      const res = await fetch(`${API_BASE}/leaderboard?mission=raster`);
       if (res.ok) {
         const data = await res.json();
         if (data.ok && Array.isArray(data.data)) {
@@ -467,7 +468,7 @@ export const useRasterStore = create<RasterState>((set, get) => ({
     set({ saveStatus: 'กำลังบันทึกลงฐานข้อมูล...' });
 
     try {
-      const res = await fetch('/api/leaderboard', {
+      const res = await fetch(`${API_BASE}/leaderboard`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

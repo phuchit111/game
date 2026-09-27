@@ -10,6 +10,7 @@ import {
   computeSpeedBonus,
 } from '../utils/geoMath';
 import { fetchLeaderboard, submitScoreToBackend } from '../services/leaderboardService';
+import { API_BASE } from '../services/api';
 import L from 'leaflet';
 
 interface VectorGameState {
@@ -293,7 +294,7 @@ export const useVectorStore = create<VectorGameState>((set, get) => ({
   loadLeaderboard: async () => {
     set({ isLoadingLeaderboard: true });
     try {
-      const res = await fetch('/api/leaderboard?mission=vector');
+      const res = await fetch(`${API_BASE}/leaderboard?mission=vector`);
       if (res.ok) {
         const data = await res.json();
         if (data.ok && Array.isArray(data.data)) {
@@ -314,7 +315,7 @@ export const useVectorStore = create<VectorGameState>((set, get) => ({
     set({ saveStatus: 'กำลังบันทึกลงฐานข้อมูล...' });
 
     try {
-      const res = await fetch('/api/leaderboard', {
+      const res = await fetch(`${API_BASE}/leaderboard`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

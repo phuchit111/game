@@ -1,6 +1,5 @@
 import type { LeaderboardEntry, OverallLeaderboardEntry } from '../types/mission';
-
-const API_BASE = import.meta.env.VITE_API_BASE_URL || '/api';
+import { API_BASE } from './api';
 const LOCAL_STORAGE_KEY = 'attribute_mission_leaderboard';
 const PROFILE_KEY = 'gis_mission_player_profile';
 const MISSION_IDS = ['attribute', 'vector', 'raster', 'rs', 'coordinate'] as const;

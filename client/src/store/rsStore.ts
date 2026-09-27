@@ -3,6 +3,7 @@ import type { MixerVerdict, RSLeaderboardEntry } from '../types/rsMission';
 import { RS_STEPS, RS_QUIZ } from '../constants/rsData';
 import { SoundFX } from '../utils/soundFX';
 import confetti from 'canvas-confetti';
+import { API_BASE } from '../services/api';
 
 interface RSState {
   // Navigation & Preferences
@@ -434,7 +435,7 @@ export const useRSStore = create<RSState>((set, get) => ({
   loadLeaderboard: async () => {
     set({ isLoadingLeaderboard: true });
     try {
-      const res = await fetch('/api/leaderboard?mission=rs');
+      const res = await fetch(`${API_BASE}/leaderboard?mission=rs`);
       const json = await res.json();
       if (json.ok && Array.isArray(json.data)) {
         set({
@@ -471,7 +472,7 @@ export const useRSStore = create<RSState>((set, get) => ({
     set({ saveStatus: 'saving' });
 
     try {
-      const res = await fetch('/api/leaderboard', {
+      const res = await fetch(`${API_BASE}/leaderboard`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
