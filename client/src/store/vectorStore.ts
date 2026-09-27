@@ -7,6 +7,7 @@ import {
   calculateGeodesicArea,
   calculatePerimeterMeters,
   lineVisitsTargetsInOrder,
+  polygonFollowsReference,
   computeSpeedBonus,
 } from '../utils/geoMath';
 import { fetchLeaderboard, submitScoreToBackend } from '../services/leaderboardService';
@@ -221,10 +222,8 @@ export const useVectorStore = create<VectorGameState>((set, get) => ({
       base = SCORE_CONFIG.polygon.base;
       allotted = SCORE_CONFIG.polygon.time;
 
-      const targetPoly = L.polygon(PLASTIC_POND_BOUNDS);
-      isCorrect = layer.getBounds().contains(targetPoly.getBounds());
-
       const latlngs = layer.getLatLngs()[0] as L.LatLng[];
+      isCorrect = polygonFollowsReference(latlngs, PLASTIC_POND_BOUNDS);
       const areaM2 = calculateGeodesicArea(latlngs);
       const perimeterM = calculatePerimeterMeters(latlngs);
 
@@ -256,7 +255,9 @@ export const useVectorStore = create<VectorGameState>((set, get) => ({
       const msg =
         stage === 2
           ? 'เส้นยังไม่ผ่านครบทั้ง 3 จุดตามลำดับ (ต้องอยู่ในรัศมีประมาณ 150 เมตรจากแต่ละจุด) ลองใหม่อีกครั้ง'
-          : 'ตำแหน่งหรือรูปทรงยังไม่ถูกต้อง ลองใหม่อีกครั้ง';
+          : stage === 3
+            ? 'รูปยังไม่ตรงแนวอ้างอิงของสระพลาสติก ลองลากให้ชิดเส้นประสีส้มและครอบคลุมพื้นที่ส่วนใหญ่'
+            : 'ตำแหน่งหรือรูปทรงยังไม่ถูกต้อง ลองใหม่อีกครั้ง';
       return { success: false, message: msg };
     }
   },

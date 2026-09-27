@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import L from 'leaflet';
 import 'leaflet-draw';
 import { useVectorStore } from '../../store/vectorStore';
-import { ALL_LOCATIONS } from '../../constants/vectorData';
+import { ALL_LOCATIONS, PLASTIC_POND_BOUNDS } from '../../constants/vectorData';
 
 interface VectorMapProps {
   onUserLayerChange: (layer: any) => void;
@@ -301,9 +301,24 @@ export const VectorMap: React.FC<VectorMapProps> = ({ onUserLayerChange, onCheck
       // Stage 3: Polygon
       map.setView([16.472906, 102.819468], 17);
 
+      // Keep the answer guide separate from the basemap, whose dashed features can change.
+      L.polygon(PLASTIC_POND_BOUNDS, {
+        color: '#f97316',
+        weight: 3,
+        opacity: 0.95,
+        dashArray: '7 7',
+        fill: false,
+        interactive: false,
+      }).addTo(refLayer);
+
       map.off('click');
       if (timerRunning) {
         const drawer = new (L.Draw as any).Polygon(map, {
+          allowIntersection: false,
+          drawError: {
+            color: '#dc2626',
+            message: 'เส้นขอบพื้นที่ตัดกันเอง กรุณาวาดใหม่',
+          },
           shapeOptions: { color: '#8b5cf6', weight: 3, fillOpacity: 0.4 },
         });
         drawer.enable();
