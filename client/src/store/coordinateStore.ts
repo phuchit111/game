@@ -1,7 +1,16 @@
 import { create } from 'zustand';
 import type { CoordinateLeaderboardEntry, GlobeTarget, UTMTarget } from '../types/coordinateMission';
-import { gridToUTM, randInt, GRID_X_MIN, GRID_X_MAX, GRID_Y_MIN, GRID_Y_MAX, fmtNum } from '../constants/coordinateData';
-import { REFERENCE_LAT, REFERENCE_LON } from '../constants/coordinateData';
+import {
+  getGlobeTargetKey,
+  getRandomGlobeTarget,
+  gridToUTM,
+  randInt,
+  GRID_X_MIN,
+  GRID_X_MAX,
+  GRID_Y_MIN,
+  GRID_Y_MAX,
+  fmtNum,
+} from '../constants/coordinateData';
 import { SoundFX } from '../utils/soundFX';
 import confetti from 'canvas-confetti';
 import { API_BASE } from '../services/api';
@@ -48,6 +57,7 @@ interface CoordinateState {
   // Phase B: 3D Globe
   targetB: GlobeTarget | null;
   globeMarkers: GlobeMarker[];
+  globeTargetKeys: string[];
 
   // Feedback & Modals
   toast: { ok: boolean; text: string } | null;
@@ -106,6 +116,7 @@ export const useCoordinateStore = create<CoordinateState>((set, get) => ({
 
   targetB: null,
   globeMarkers: [],
+  globeTargetKeys: [],
 
   toast: null,
   setToast: (toast) => set({ toast }),
@@ -134,6 +145,7 @@ export const useCoordinateStore = create<CoordinateState>((set, get) => ({
       phase: 'A',
       page: 'game',
       missionCompleted: false,
+      globeTargetKeys: [],
       modal: {
         open: true,
         title: 'พิกัด UTM (Easting / Northing) คืออะไร?',
@@ -247,10 +259,11 @@ export const useCoordinateStore = create<CoordinateState>((set, get) => ({
 
   transitionToPhaseB: () => {
     set({
+      globeTargetKeys: [],
       modal: {
         open: true,
         title: 'ทีนี้มาลองบนลูกโลกจริงกันบ้าง!',
-        html: 'บนโลกทรงกลม เราใช้ <b>Latitude (เส้นรุ้ง)</b> วัดจากเส้นศูนย์สูตร (0°) ขึ้นเหนือหรือลงใต้ ถึง 90° และ <b>Longitude (เส้นแวง)</b> วัดจากเส้นเมริเดียนแรก (0°) ไปตะวันออกหรือตะวันตก ถึง 180° เส้นสีเหลืองบนลูกโลกคือเส้นศูนย์สูตรและเมริเดียนแรก ลองหมุนลูกโลกแล้วคลิกหาตำแหน่งที่กำหนดดู!',
+        html: 'บนโลกทรงกลม เราใช้ <b>Latitude (เส้นรุ้ง)</b> วัดจากเส้นศูนย์สูตร (0°) ขึ้นเหนือหรือลงใต้ ถึง 90° และ <b>Longitude (เส้นแวง)</b> วัดจากเส้นเมริเดียนแรก (0°) ไปตะวันออกหรือตะวันตก ถึง 180° ด่านนี้มีโจทย์ย่อย 5 ข้อ ซึ่งสุ่มพิกัดเป็น <b>องศาจำนวนเต็ม</b> ไม่มีทศนิยม เส้นสีเหลืองบนลูกโลกคือเส้นศูนย์สูตรและเมริเดียนแรก ลองหมุนลูกโลกแล้วคลิกหาตำแหน่งที่กำหนดดู!',
         nextLabel: 'เริ่มส่วนที่ 2',
         onNext: () => {
           get().closeModal();
@@ -262,16 +275,15 @@ export const useCoordinateStore = create<CoordinateState>((set, get) => ({
   },
 
   startRoundB: (round) => {
-    // Keep the globe challenge aligned with the survey map reference point.
-    const lat = REFERENCE_LAT;
-    const lon = REFERENCE_LON;
-    const latLabel = `${Math.abs(lat)}°${lat >= 0 ? 'N' : 'S'}`;
-    const lonLabel = `${Math.abs(lon)}°${lon >= 0 ? 'E' : 'W'}`;
+    const { globeTargetKeys } = get();
+    const target = getRandomGlobeTarget(globeTargetKeys);
+    const targetKey = getGlobeTargetKey(target.lat, target.lon);
 
     set({
       roundIndex: round,
-      targetB: { lat, lon, latLabel, lonLabel },
+      targetB: target,
       globeMarkers: [],
+      globeTargetKeys: [...globeTargetKeys, targetKey],
       timer: 120,
       timerTotal: 120,
       timerRunning: true,
@@ -339,11 +351,11 @@ export const useCoordinateStore = create<CoordinateState>((set, get) => ({
           ? 'ยินดีด้วย ตำแหน่งถูกต้อง!'
           : 'หมดเวลา ไม่เป็นไรนะ',
         html: isLastRound
-          ? `${correct ? `คุณทำคะแนนได้ <b>${newScore} / ${MAX_COORDINATE_SCORE} คะแนน</b>!` : `หมดเวลาในรอบสุดท้าย คุณทำคะแนนได้ <b>${newScore} / ${MAX_COORDINATE_SCORE} คะแนน</b>`} ตอนนี้คุณเข้าใจทั้งพิกัด UTM (Easting/Northing) บนระนาบ และ Latitude/Longitude บนทรงกลม 3 มิติแล้ว ทั้งสองระบบนี้คือรากฐานของการอ้างอิงตำแหน่งในโลก GIS ทั้งหมด${correct ? '' : '<br>ลูกโลกด้านหลังแสดงจุดสีเหลืองและซูมไปยังตำแหน่งที่ถูกต้องแล้ว'}`
+          ? `${correct ? `คุณทำคะแนนได้ <b>${newScore} / ${MAX_COORDINATE_SCORE} คะแนน</b>!` : `หมดเวลาในโจทย์ย่อยสุดท้าย คุณทำคะแนนได้ <b>${newScore} / ${MAX_COORDINATE_SCORE} คะแนน</b>`} ตอนนี้คุณเข้าใจทั้งพิกัด UTM (Easting/Northing) บนระนาบ และ Latitude/Longitude บนทรงกลม 3 มิติแล้ว ทั้งสองระบบนี้คือรากฐานของการอ้างอิงตำแหน่งในโลก GIS ทั้งหมด${correct ? '' : '<br>ลูกโลกด้านหลังแสดงจุดสีเหลืองและซูมไปยังตำแหน่งที่ถูกต้องแล้ว'}`
           : correct
           ? `เยี่ยมมาก! ตำแหน่งคือ <b>Lat ${targetB.latLabel}, Lon ${targetB.lonLabel}</b><br>คุณได้รับ +${POINTS_PER_ROUND} คะแนน (รวม ${newScore} / ${MAX_COORDINATE_SCORE})`
           : `เฉลย: ตำแหน่งที่ถูกต้องคือ <b>Lat ${targetB.latLabel}, Lon ${targetB.lonLabel}</b><br>ลูกโลกด้านหลังจะแสดงจุดเฉลยพร้อมซูมไปยังตำแหน่งนั้นให้ดูชัดเจน ลองใหม่ในรอบถัดไปนะ!`,
-        nextLabel: isLastRound ? 'ดูผลคะแนนและบันทึกอันดับ' : `ไปต่อ (รอบ ${roundIndex + 1}/${ROUNDS_PER_PHASE})`,
+        nextLabel: isLastRound ? 'ดูผลคะแนนและบันทึกอันดับ' : `ไปต่อ (ข้อย่อย ${roundIndex + 1}/${ROUNDS_PER_PHASE})`,
         onNext: () => {
           get().closeModal();
           if (!isLastRound) {

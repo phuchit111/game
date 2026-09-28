@@ -320,11 +320,11 @@ export const Globe3DStage: React.FC = () => {
 
         <div style={{ fontSize: 16, fontWeight: 700, color: '#0b2036', marginBottom: 4 }}>
           <MapPinned size={17} style={{ verticalAlign: 'middle', marginRight: 6 }} />
-          {targetB ? `รอบที่ ${roundIndex}/5 — หาตำแหน่ง Lat ${targetB.latLabel}, Lon ${targetB.lonLabel}` : 'กำลังโหลด...'}
+          {targetB ? `ข้อย่อย ${roundIndex}/5 — หาตำแหน่ง Lat ${targetB.latLabel}, Lon ${targetB.lonLabel}` : 'กำลังโหลด...'}
         </div>
 
         <div style={{ fontSize: 13, color: '#5b6b78', lineHeight: 1.5 }}>
-          เส้นสีเหลืองคือ <b>เส้นศูนย์สูตร (Lat 0°)</b> และ <b>เส้นเมริเดียนแรก (Lon 0°)</b> ใช้เป็นจุดอ้างอิงนับไป — ลากเมาส์ช้า ๆ เพื่อหมุนลูกโลก แล้วดับเบิลคลิกตำแหน่งที่คาดว่าใช่เพื่อยืนยันคำตอบ
+          โจทย์ทุกข้อใช้พิกัด <b>องศาจำนวนเต็ม ไม่มีทศนิยม</b> เส้นสีเหลืองคือ <b>เส้นศูนย์สูตร (Lat 0°)</b> และ <b>เส้นเมริเดียนแรก (Lon 0°)</b> ใช้เป็นจุดอ้างอิงนับไป — ลากเมาส์ช้า ๆ เพื่อหมุนลูกโลก แล้วดับเบิลคลิกตำแหน่งที่คาดว่าใช่เพื่อยืนยันคำตอบ
         </div>
 
         {toast && (

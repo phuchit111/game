@@ -62,7 +62,7 @@ export const CoordinateHeader: React.FC<CoordinateHeaderProps> = ({ onBackToHub 
               {phase === 'A' ? 'PART 1: UTM GRID' : 'PART 2: LAT / LONG GLOBE'}
             </span>
             <span className="coordinate-round-label" style={{ fontSize: 13, color: '#94a3b8' }}>
-              รอบที่ <b>{roundIndex} / 5</b>
+              {phase === 'A' ? 'รอบที่' : 'ข้อย่อย'} <b>{roundIndex} / 5</b>
             </span>
           </div>
         </div>

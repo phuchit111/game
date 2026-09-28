@@ -1,4 +1,4 @@
-import type { UTMTarget } from '../types/coordinateMission';
+import type { GlobeTarget, UTMTarget } from '../types/coordinateMission';
 
 export const GRID_X_MIN = -3;
 export const GRID_X_MAX = 3;
@@ -27,6 +27,46 @@ export const REFERENCE_LAT = 14.472649;
 export const REFERENCE_LON = 105.00000;
 export const REFERENCE_UTM_E = UTM_E0;
 export const REFERENCE_UTM_N = UTM_N0;
+
+// The globe uses 30-degree graticules, so keep the quiz targets on those
+// visible lines. Every value is a whole degree, which makes each prompt
+// readable without decimal coordinates.
+export const GLOBE_LATITUDE_OPTIONS = [-60, -30, 0, 30, 60] as const;
+export const GLOBE_LONGITUDE_OPTIONS = [-150, -120, -90, -60, -30, 0, 30, 60, 90, 120, 150] as const;
+
+function globeTargetKey(lat: number, lon: number): string {
+  return `${lat}:${lon}`;
+}
+
+function formatLatitude(lat: number): string {
+  return lat === 0 ? '0°' : `${Math.abs(lat)}°${lat > 0 ? 'N' : 'S'}`;
+}
+
+function formatLongitude(lon: number): string {
+  return lon === 0 ? '0°' : `${Math.abs(lon)}°${lon > 0 ? 'E' : 'W'}`;
+}
+
+const GLOBE_TARGETS: GlobeTarget[] = GLOBE_LATITUDE_OPTIONS.flatMap((lat) =>
+  GLOBE_LONGITUDE_OPTIONS.map((lon) => ({
+    lat,
+    lon,
+    latLabel: formatLatitude(lat),
+    lonLabel: formatLongitude(lon),
+  }))
+);
+
+export function getRandomGlobeTarget(usedTargetKeys: readonly string[] = []): GlobeTarget {
+  const used = new Set(usedTargetKeys);
+  const availableTargets = GLOBE_TARGETS.filter((target) => !used.has(globeTargetKey(target.lat, target.lon)));
+  const choices = availableTargets.length > 0 ? availableTargets : GLOBE_TARGETS;
+  const target = choices[randInt(0, choices.length - 1)];
+
+  return { ...target };
+}
+
+export function getGlobeTargetKey(lat: number, lon: number): string {
+  return globeTargetKey(lat, lon);
+}
 
 // Survey control points supplied for the WGS84 / UTM zone 48 overlay.
 // The slight latitude and longitude differences are intentional: the grid
